@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>图片</title>
+  <style>
+    * {
+      padding: 0;
+      margin: 0;
+    }
+
+    body,
+    html {
+      width: 100%;
+      height: 100%;
+    }
+
+    .con {
+      width: 90%;
+      margin: 0 auto;
+      border: 1px solid #eeeeee;
+      margin-top: 10px;
+    }
+
+    ul {
+      width: 100%;
+      display: flex;
+      flex-direction: row;
+      overflow-x: auto;
+    }
+
+    li {
+      display: block;
+      width: 140px;
+      height: 50px;
+      line-height: 50px;
+      text-align: center;
+      margin: 0 10px;
+      border: 1px solid gray;
+      list-style-type: none;
+      padding: 0 15px;
+    }
+
+    .active {
+      background-color: green;
+      color: #ffffff;
+    }
+
+    #img-con {
+      width: 100%;
+      border: 1px solid red;
+      margin: 0 auto;
+    }
+
+    .img-box {
+      width: 100%;
+      height: auto;
+      text-align: center;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="con">
+    <ul id="imgFileList">
+      {{each imgFilesList}}
+      <li>{{$value}}</li>
+      {{/each}}
+    </ul>
+    <div id="img-con"></div>
+  </div>
+
+  <script src="/node_modules/jquery/dist/jquery.js"></script>
+  <script>
+    (function () {
+      $('#imgFileList').find('li').first().addClass('active')
+      let urlData = {
+        url: $('#imgFileList').find('li').first().text()
+      }
+      $.post('/imgLists', urlData, function (data) {
+        let imgList = ''
+        data.data.forEach(item => {
+          imgList += "<div class='img-box'><img src='../public/img/" + urlData.url + "/" + item + "'/></div>"
+        })
+        $('#img-con').append(imgList)
+      })
+    })()
+
+
+    $('#imgFileList li').click(function () {
+      $(this).addClass('active')
+      $(this).siblings('li').removeClass('active')
+      $('#img-con').empty()
+      let urlData = {
+        url: $(this).text()
+      }
+      $.post('/imgLists', { url: $(this).text() }, function (data) {
+        let imgList = ''
+        data.data.forEach(item => {
+          imgList += "<div class='img-box'><img src='../public/img/" + urlData.url + "/" + item + "'/></div>"
+        })
+        $('#img-con').append(imgList)
+      })
+    })
+  </script>
+</body>
+
+</html>
